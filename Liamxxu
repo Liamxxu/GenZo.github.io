@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Majestic RP - GenZo Familie</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            background-color: #444;
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: #fff;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: #ddd;
+            color: #000;
+        }
+        .container {
+            display: none;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .container.active {
+            display: block;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Majestic RP - GenZo Familie</h1>
+    </header>
+    <nav>
+        <a href="#" onclick="showSection('auftraege')">Aufträge</a>
+        <a href="#" onclick="showSection('familie')">Familie</a>
+    </nav>
+    <div class="container" id="auftraege">
+        <h2>Aufträge</h2>
+        <form id="auftrag-form">
+            <div class="form-group">
+                <label for="auftrag">Auftrag:</label>
+                <input type="text" id="auftrag" required>
+            </div>
+            <div class="form-group">
+                <label for="gewinn">Gewinn ($):</label>
+                <input type="number" id="gewinn" required>
+            </div>
+            <div class="form-group">
+                <label for="kosten">Kosten ($):</label>
+                <input type="number" id="kosten" required>
+            </div>
+            <div class="form-group">
+                <label for="mitarbeiter-anzahl">Anzahl der Mitarbeiter:</label>
+                <input type="number" id="mitarbeiter-anzahl" required>
+            </div>
+            <div class="form-group">
+                <label for="mitarbeiter">Mitarbeiter:</label>
+                <select id="mitarbeiter" multiple required>
+                    <!-- Mitarbeiter werden hier hinzugefügt -->
+                </select>
+            </div>
+            <button type="button" onclick="addAuftrag()">Auftrag hinzufügen</button>
+        </form>
+        <h2>Auftragsliste</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Auftrag</th>
+                    <th>Gewinn ($)</th>
+                    <th>Kosten ($)</th>
+                    <th>Mitarbeiter</th>
+                    <th>Auszahlung pro Mitarbeiter ($)</th>
+                </tr>
+            </thead>
+            <tbody id="auftragsliste">
+                <!-- Aufträge werden hier hinzugefügt -->
+            </tbody>
+        </table>
+    </div>
+    <div class="container" id="familie">
+        <h2>Familiengewinn</h2>
+        <p id="familien-gewinn">Gesamtgewinn der Familie: $0.00</p>
+        <h2>Neuen Mitarbeiter hinzufügen</h2>
+        <form id="familie-form">
+            <div class="form-group">
+                <label for="uuid">UUID:</label>
+                <input type="text" id="familie-uuid" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="familie-name" required>
+            </div>
+            <button type="button" onclick="addMitarbeiterFromFamilie()">Mitarbeiter hinzufügen</button>
+        </form>
+        <h2>Mitarbeiterliste</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>UUID</th>
+                    <th>Name</th>
+                    <th>Gesamte Auszahlung ($)</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="familie-mitarbeiterliste">
+                <!-- Mitarbeiter werden hier hinzugefügt -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        let totalFamilienGewinn = 0;
+        const mitarbeiterAuszahlungen = {};
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.container').forEach(container => {
+                container.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function addAuftrag() {
+            const auftrag = document.getElementById('auftrag').value;
+            const gewinn = parseFloat(document.getElementById('gewinn').value);
+            const kosten = parseFloat(document.getElementById('kosten').value);
+            const mitarbeiterAnzahl = parseInt(document.getElementById('mitarbeiter-anzahl').value);
+            const mitarbeiterSelect = document.getElementById('mitarbeiter');
+            const selectedMitarbeiter = Array.from(mitarbeiterSelect.selectedOptions).map(option => option.value);
+            const auszahlungProMitarbeiter = (gewinn * 0.7) / mitarbeiterAnzahl;
+
+            const auftragsliste = document.getElementById('auftragsliste');
+            const row = auftragsliste.insertRow();
+            row.insertCell(0).innerText = auftrag;
+            row.insertCell(1).innerText = gewinn.toFixed(2);
+            row.insertCell(2).innerText = kosten.toFixed(2);
+            const mitarbeiterNames = selectedMitarbeiter.map(uuid => {
+                const mitarbeiterOption = document.querySelector(`#mitarbeiter option[value='${uuid}']`);
+                return mitarbeiterOption ? mitarbeiterOption.innerText : '';
+            }).join(', ');
+            row.insertCell(3).innerText = mitarbeiterNames;
+            row.insertCell(4).innerText = auszahlungProMitarbeiter.toFixed(2);
+
+            selectedMitarbeiter.forEach(mitarbeiterUUID => {
+                if (mitarbeiterAuszahlungen[mitarbeiterUUID] === undefined) {
+                    mitarbeiterAuszahlungen[mitarbeiterUUID] = 0;
+                }
+                mitarbeiterAuszahlungen[mitarbeiterUUID] += auszahlungProMitarbeiter;
+
+                const mitarbeiterRow = document.querySelector(`#familie-mitarbeiterliste tr[data-uuid='${mitarbeiterUUID}']`);
+                if (mitarbeiterRow) {
+                    const auszahlungCell = mitarbeiterRow.querySelector('.auszahlung');
+                    auszahlungCell.innerText = `$${mitarbeiterAuszahlungen[mitarbeiterUUID].toFixed(2)}`;
+                }
+            });
+
+            const familienGewinn = gewinn * 0.3;
+            totalFamilienGewinn += familienGewinn;
+            document.getElementById('familien-gewinn').innerText = `Gesamtgewinn der Familie: $${totalFamilienGewinn.toFixed(2)}`;
+
+            document.getElementById('auftrag-form').reset();
+            mitarbeiterSelect.selectedIndex = -1;
+        }
+
+        function addMitarbeiterFromFamilie() {
+            const uuid = document.getElementById('familie-uuid').value;
+            const name = document.getElementById('familie-name').value;
+
+            // Mitarbeiterliste aktualisieren
+            const mitarbeiterSelect = document.getElementById('mitarbeiter');
+            const option = document.createElement('option');
+            option.value = uuid;
+            option.innerText = name;
+            mitarbeiterSelect.appendChild(option);
+
+            const familieMitarbeiterliste = document.getElementById('familie-mitarbeiterliste');
+            const row = familieMitarbeiterliste.insertRow();
+            row.setAttribute('data-uuid', uuid);
+            row.insertCell(0).innerText = uuid;
+            row.insertCell(1).innerText = name;
+            row.insertCell(2).classList.add('auszahlung');
+            row.cells[2].innerText = '$0.00';
+            const actionsCell = row.insertCell(3);
+            const deleteButton = document.createElement('button');
+            deleteButton.innerText = 'Entfernen';
+            deleteButton.onclick = function() {
+                deleteMitarbeiter(uuid);
+            };
+            actionsCell.appendChild(deleteButton);
+
+            document.getElementById('familie-form').reset();
+        }
+
+        function deleteMitarbeiter(uuid) {
+            // Mitarbeiter aus der Familie-Mitarbeiterliste entfernen
+            const familieRow = document.querySelector(`#familie-mitarbeiterliste tr[data-uuid='${uuid}']`);
+            if (familieRow) {
+                familieRow.remove();
+            }
+            // Mitarbeiter aus dem Dropdown entfernen
+            const option = document.querySelector(`#mitarbeiter option[value='${uuid}']`);
+            if (option) {
+                option.remove();
+            }
+            // Auszahlung des Mitarbeiters zurücksetzen
+            delete mitarbeiterAuszahlungen[uuid];
+        }
+    </script>
+</body>
+</html>
