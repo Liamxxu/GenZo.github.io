@@ -3,98 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Majestic RP - GenZo Familie</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-        nav {
-            background-color: #444;
-            overflow: hidden;
-        }
-        nav a {
-            float: left;
-            display: block;
-            color: #fff;
-            text-align: center;
-            padding: 14px 20px;
-            text-decoration: none;
-        }
-        nav a:hover {
-            background-color: #ddd;
-            color: #000;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            text-align: center;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="number"], textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <title>Majestic Family Manager</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Majestic RP - GenZo Familie</h1>
+        <h1>Majestic Family Manager</h1>
     </header>
     <nav>
         <a href="#" onclick="showSection('auftraege')">Aufträge</a>
         <a href="#" onclick="showSection('familie')">Familie</a>
     </nav>
-    <div class="container" id="auftraege" style="display:none;">
+    <div class="container" id="auftraege">
         <h2>Aufträge</h2>
         <form id="auftrag-form">
             <div class="form-group">
@@ -115,9 +35,7 @@
             </div>
             <div class="form-group">
                 <label for="mitarbeiter">Mitarbeiter:</label>
-                <select id="mitarbeiter" multiple required>
-                    <!-- Mitarbeiter werden hier hinzugefügt -->
-                </select>
+                <select id="mitarbeiter" multiple required></select>
             </div>
             <button type="button" onclick="addAuftrag()">Auftrag hinzufügen</button>
         </form>
@@ -132,9 +50,7 @@
                     <th>Auszahlung pro Mitarbeiter ($)</th>
                 </tr>
             </thead>
-            <tbody id="auftragsliste">
-                <!-- Aufträge werden hier hinzugefügt -->
-            </tbody>
+            <tbody id="auftragsliste"></tbody>
         </table>
     </div>
     <div class="container" id="familie">
@@ -158,82 +74,13 @@
                 <tr>
                     <th>UUID</th>
                     <th>Name</th>
-                    <th>Gesamte Auszahlung ($)</th>
+                    <th>Gesamtauszahlung ($)</th>
                     <th>Aktionen</th>
                 </tr>
             </thead>
-            <tbody id="familie-mitarbeiterliste">
-                <!-- Mitarbeiter werden hier hinzugefügt -->
-            </tbody>
+            <tbody id="familie-mitarbeiterliste"></tbody>
         </table>
     </div>
-    <script>
-        const scriptURL = 'YOUR_SCRIPT_DEPLOYMENT_URL';
-
-        document.addEventListener('DOMContentLoaded', fetchEmployees);
-
-        async function fetchEmployees() {
-            try {
-                const response = await fetch(`${scriptURL}?action=getEmployees`);
-                const data = await response.json();
-                populateEmployeeTable(data);
-            } catch (error) {
-                console.error('Error fetching employees:', error);
-            }
-        }
-
-        function populateEmployeeTable(data) {
-            const familieMitarbeiterliste = document.getElementById('familie-mitarbeiterliste');
-            familieMitarbeiterliste.innerHTML = '';
-            data.forEach(row => {
-                const [uuid, name, totalPayment] = row;
-                const tableRow = familieMitarbeiterliste.insertRow();
-                tableRow.setAttribute('data-uuid', uuid);
-                tableRow.insertCell(0).innerText = uuid;
-                tableRow.insertCell(1).innerText = name;
-                tableRow.insertCell(2).innerText = `$${totalPayment.toFixed(2)}`;
-                const actionsCell = tableRow.insertCell(3);
-                const deleteButton = document.createElement('button');
-                deleteButton.innerText = 'Löschen';
-                deleteButton.onclick = function() {
-                    deleteMitarbeiter(uuid);
-                };
-                actionsCell.appendChild(deleteButton);
-            });
-        }
-
-        async function addMitarbeiterFromFamilie() {
-            const uuid = document.getElementById('familie-uuid').value;
-            const name = document.getElementById('familie-name').value;
-            if (uuid && name) {
-                try {
-                    const response = await fetch(scriptURL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'addEmployee', uuid, name })
-                    });
-                    if (response.ok) {
-                        fetchEmployees();
-                    }
-                } catch (error) {
-                    console.error('Error adding employee:', error);
-                }
-            }
-        }
-
-        function showSection(section) {
-            document.getElementById('auftraege').style.display = section === 'auftraege' ? 'block' : 'none';
-            document.getElementById('familie').style.display = section === 'familie' ? 'block' : 'none';
-        }
-
-        // Füge die anderen Funktionen hier ein (addAuftrag, deleteMitarbeiter, etc.)
-
-        async function addAuftrag() {
-            // Deine Logik hier
-        }
-
-        async function deleteMitarbeiter(uuid) {
-            // Deine Logik hier
-        }
-    </script>
+    <script src="scripts.js"></script>
 </body>
 </html>
