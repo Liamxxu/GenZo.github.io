@@ -1,4 +1,4 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwvFi8VjXWkJNXWDfOYqUebrareZCt86PQxSRFHv6VbK4_aMIaQkqaqBJ2PcnkfkEP3/exec';
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxuSVsR5pzlubEunkxa2zyjpiLPL2LApggoULIDDNS7kbiCrNwZTHc5IQQSI-0y_4K2/exec';
 
 document.addEventListener('DOMContentLoaded', function() {
     fetchEmployees();
@@ -6,9 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function fetchEmployees() {
     try {
-        const response = await fetch(scriptURL + '?action=getEmployees');
-        const data = await response.json();
-        populateEmployeeTable(data);
+        const response = await fetch(scriptURL + '?action=getEmployees', {
+            mode: 'no-cors' // Setze den Request-Modus auf 'no-cors'
+        });
+        // Handle die Antwort hier ...
     } catch (error) {
         console.error('Error fetching employees:', error);
     }
@@ -39,6 +40,7 @@ async function addMitarbeiterFromFamilie() {
         try {
             const response = await fetch(scriptURL, {
                 method: 'POST',
+                mode: 'no-cors', // Setze den Request-Modus auf 'no-cors'
                 body: JSON.stringify({ action: 'addEmployee', uuid, name })
             });
             if (response.ok) {
@@ -47,6 +49,32 @@ async function addMitarbeiterFromFamilie() {
         } catch (error) {
             console.error('Error adding employee:', error);
         }
+    }
+}
+
+function showSection(section) {
+    document.getElementById('auftraege').style.display = section === 'auftraege' ? 'block' : 'none';
+    document.getElementById('familie').style.display = section === 'familie' ? 'block' : 'none';
+}
+
+// Weitere Funktionen hier...
+
+async function addAuftrag() {
+    // Deine Logik hier
+}
+
+async function deleteMitarbeiter(uuid) {
+    try {
+        const response = await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', // Setze den Request-Modus auf 'no-cors'
+            body: JSON.stringify({ action: 'deleteEmployee', uuid })
+        });
+        if (response.ok) {
+            fetchEmployees();
+        }
+    } catch (error) {
+        console.error('Error deleting employee:', error);
     }
 }
 
