@@ -1,5 +1,5 @@
 const spreadsheetId = '16UzPE4jiV7WOlBtFDXrhIe1LUI30FIIkadkX2A-IXqY';
-const apiKey = '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'; // Dein API-Schlüssel
+const apiKey = '85894591672-c5es2gvfaekq0jq81ee5j2m689bdvseo.apps.googleusercontent.com'; // Dein API-Schlüssel
 
 let totalFamilienGewinn = 0;
 
