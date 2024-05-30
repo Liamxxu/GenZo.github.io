@@ -6,9 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function fetchEmployees() {
     try {
-        const response = await fetch(scriptURL + '?action=getEmployees', {
-            mode: 'no-cors' // Setze den Request-Modus auf 'no-cors'
-        });
+        const response = await fetch(scriptURL + '?action=getEmployees');
         // Handle die Antwort hier ...
     } catch (error) {
         console.error('Error fetching employees:', error);
@@ -40,7 +38,6 @@ async function addMitarbeiterFromFamilie() {
         try {
             const response = await fetch(scriptURL, {
                 method: 'POST',
-                mode: 'no-cors', // Setze den Request-Modus auf 'no-cors'
                 body: JSON.stringify({ action: 'addEmployee', uuid, name })
             });
             if (response.ok) {
@@ -49,6 +46,31 @@ async function addMitarbeiterFromFamilie() {
         } catch (error) {
             console.error('Error adding employee:', error);
         }
+    }
+}
+
+function showSection(section) {
+    document.getElementById('auftraege').style.display = section === 'auftraege' ? 'block' : 'none';
+    document.getElementById('familie').style.display = section === 'familie' ? 'block' : 'none';
+}
+
+// Weitere Funktionen hier...
+
+async function addAuftrag() {
+    // Deine Logik hier
+}
+
+async function deleteMitarbeiter(uuid) {
+    try {
+        const response = await fetch(scriptURL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'deleteEmployee', uuid })
+        });
+        if (response.ok) {
+            fetchEmployees();
+        }
+    } catch (error) {
+        console.error('Error deleting employee:', error);
     }
 }
 
