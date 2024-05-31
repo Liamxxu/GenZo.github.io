@@ -1,4 +1,4 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbyPy_7YDOKvC2xPPGrn3lr7y0cXsgnOM5hgycs1MWtlQ96JAOjukhsR2J6pA2ukhphm/exec';
+const scriptURL = 'DEINE_WEB_APP_URL_HIER';
 
 document.addEventListener('DOMContentLoaded', function() {
     fetchEmployees();
