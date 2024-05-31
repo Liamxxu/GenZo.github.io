@@ -45,11 +45,16 @@ async function addMitarbeiterFromFamilie() {
                 body: JSON.stringify({ action: 'addEmployee', uuid, name })
             });
             if (response.ok) {
+                console.log('Employee added successfully');
                 fetchEmployees();
+            } else {
+                console.error('Error adding employee:', response.status, response.statusText);
             }
         } catch (error) {
             console.error('Error adding employee:', error);
         }
+    } else {
+        console.error('UUID and Name are required');
     }
 }
 
@@ -72,7 +77,10 @@ async function deleteMitarbeiter(uuid) {
             body: JSON.stringify({ action: 'deleteEmployee', uuid })
         });
         if (response.ok) {
+            console.log('Employee deleted successfully');
             fetchEmployees();
+        } else {
+            console.error('Error deleting employee:', response.status, response.statusText);
         }
     } catch (error) {
         console.error('Error deleting employee:', error);
